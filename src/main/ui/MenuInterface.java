@@ -5,13 +5,14 @@ import dto.PricingRules;
 import java.util.List;
 import java.util.Scanner;
 
+import static ui.MainUserInterface.printSectionSeparator;
+
 public class MenuInterface {
     private PricingRulesInterface pricingRulesInterface;
     private String menuSelection;
     private final Scanner scanner;
     private final PricingRules pricingRules;
     private static final List<String> VALID_MENU_INPUTS = List.of("1", "2");
-    private static final String SECTION_SEPARATOR = "-".repeat(50).concat("\n");
 
     public MenuInterface() {
         this.scanner = new Scanner(System.in);
@@ -59,9 +60,5 @@ public class MenuInterface {
     private void printMenuPrompt() {
         printSectionSeparator();
         System.out.println("Menu (Press Enter to confirm your selection)");
-    }
-
-    private void printSectionSeparator() {
-        System.out.println(SECTION_SEPARATOR);
     }
 }
