@@ -6,16 +6,17 @@ import java.util.List;
 import java.util.Scanner;
 
 public class MenuInterface {
+    private PricingRulesInterface pricingRulesInterface;
     private String menuSelection;
     private final Scanner scanner;
     private final PricingRules pricingRules;
     private static final List<String> VALID_MENU_INPUTS = List.of("1", "2");
     private static final String SECTION_SEPARATOR = "-".repeat(50).concat("\n");
 
-
-    public MenuInterface(Scanner scanner, PricingRules pricingRules) {
-        this.scanner = scanner;
-        this.pricingRules = pricingRules;
+    public MenuInterface() {
+        this.scanner = new Scanner(System.in);
+        this.pricingRules = new PricingRules();
+        this.pricingRulesInterface = new PricingRulesInterface(this.scanner, this.pricingRules);
     }
 
     public void navigateToMenu() {
@@ -41,7 +42,8 @@ public class MenuInterface {
         printMenuPrompt();
 
         if (pricingRules.notConfigured()) {
-            //configurePricingRules();
+            System.out.println("Pricing rules have not been configured.");
+            pricingRulesInterface.configurePricingRules();
         }
 
         exit();

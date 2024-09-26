@@ -19,11 +19,11 @@ public class PricingRules {
     }
 
     public boolean notConfigured() {
-        String currentUnitPrice;
+        int currentUnitPrice;
         for (Item item: items) {
             currentUnitPrice = item.getUnitPricePence();
 
-            if (currentUnitPrice == null || currentUnitPrice.isEmpty()) {
+            if (currentUnitPrice == 0) {
                 return true;
             }
         }

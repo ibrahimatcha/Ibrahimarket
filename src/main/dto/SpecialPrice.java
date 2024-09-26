@@ -1,19 +1,30 @@
 package dto;
 
-public class SpecialPrice {
-    private final String units;
-    private final String price;
+import util.PriceUtils;
 
-    public SpecialPrice(String units, String price) {
+public class SpecialPrice {
+    private final int units;
+    private final int pricePence;
+
+    public SpecialPrice(int units, int pricePence) {
         this.units = units;
-        this.price = price;
+        this.pricePence = pricePence;
     }
 
-    public String getUnits() {
+    public int getUnits() {
         return units;
     }
 
-    public String getPrice() {
-        return price;
+    public int getPricePence() {
+        return pricePence;
+    }
+
+    @Override
+    public String toString() {
+        if (units != 0 && pricePence != 0) {
+            return "%d for %s".formatted(units, PriceUtils.getPenceDisplayPrice(pricePence));
+        }
+
+        return "N/A";
     }
 }

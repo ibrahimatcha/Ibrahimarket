@@ -2,7 +2,7 @@ package dto;
 
 public class Item {
     private String identifier;
-    private String unitPricePence;
+    private int unitPricePence;
     private SpecialPrice specialPrice;
 
     public Item(String identifier) {
@@ -17,11 +17,11 @@ public class Item {
         this.identifier = identifier;
     }
 
-    public String getUnitPricePence() {
+    public int getUnitPricePence() {
         return unitPricePence;
     }
 
-    public void setUnitPricePence(String unitPricePence) {
+    public void setUnitPricePence(int unitPricePence) {
         this.unitPricePence = unitPricePence;
     }
 
