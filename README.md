@@ -1,7 +1,8 @@
 # Ibrahimarket App
 
 Was a fun exercise, got a bit carried away in some aspects rather than strictly sticking to the scope of the brief 
-but tried to not overengineer a solution. 
+but tried to not overengineer a solution. Not surprised it happened in some cases since I didn't split it up into parts 
+or test drive.
 
 Some of my structure is a bit messy as I was unfamiliar with creating an app with a CLI, 
 and I am used to the standard Controller -> Service -> DAO kind of setup.
