@@ -1,6 +1,6 @@
 package dto;
 
-import util.PriceUtils;
+import util.GeneralUtils;
 
 public class SpecialPrice {
     private final int units;
@@ -22,7 +22,7 @@ public class SpecialPrice {
     @Override
     public String toString() {
         if (units != 0 && pricePence != 0) {
-            return "%d for %s".formatted(units, PriceUtils.getPenceDisplayPrice(pricePence));
+            return "%d for %s".formatted(units, GeneralUtils.getPenceDisplayPrice(pricePence));
         }
 
         return "N/A";

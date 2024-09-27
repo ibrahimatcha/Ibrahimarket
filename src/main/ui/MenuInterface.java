@@ -2,22 +2,21 @@ package ui;
 
 import dto.PricingRules;
 
-import java.util.List;
 import java.util.Scanner;
 
-import static ui.MainUserInterface.printSectionSeparator;
+import static util.GeneralUtils.*;
 
 public class MenuInterface {
-    private PricingRulesInterface pricingRulesInterface;
-    private String menuSelection;
     private final Scanner scanner;
     private final PricingRules pricingRules;
-    private static final List<String> VALID_MENU_INPUTS = List.of("1", "2");
+    private final PricingRulesInterface pricingRulesInterface;
+    private final CheckoutInterface checkoutInterface;
 
     public MenuInterface() {
         this.scanner = new Scanner(System.in);
         this.pricingRules = new PricingRules();
         this.pricingRulesInterface = new PricingRulesInterface(this.scanner, this.pricingRules);
+        this.checkoutInterface = new CheckoutInterface(this.scanner);
     }
 
     public void navigateToMenu() {
@@ -25,11 +24,10 @@ public class MenuInterface {
         System.out.println("1. New Checkout Transaction");
         System.out.println("2. Exit");
         System.out.println();
-        menuSelection = scanner.nextLine();
+        String menuSelection = scanner.nextLine();
 
-        if (menuSelection == null || !VALID_MENU_INPUTS.contains(menuSelection)) {
-            System.out.println("Erroneous Input Detected");
-            System.out.println("Returning to Menu");
+        if (menuSelection == null || !VALID_MENU_INPUTS.contains(menuSelection.trim())) {
+            printInvalidInputMessage("Please select an option from the menu");
             navigateToMenu();
         }
 
@@ -42,12 +40,30 @@ public class MenuInterface {
     private void newCheckoutTransaction() {
         printMenuPrompt();
 
-        if (pricingRules.notConfigured()) {
-            System.out.println("Pricing rules have not been configured.");
-            pricingRulesInterface.configurePricingRules();
+        if (pricingRules.unitPricesConfigured()) {
+            System.out.println("Would you like to re-configure pricing rules?");
+            System.out.println("1. Yes");
+            System.out.println("2. No");
+            System.out.println();
+            String menuSelection = scanner.nextLine();
+
+            if (menuSelection == null || !VALID_MENU_INPUTS.contains(menuSelection.trim())) {
+                printInvalidInputMessage("Please select an option from the menu");
+                newCheckoutTransaction();
+            }
+
+            if ("1".equals(menuSelection.trim())) {
+                pricingRulesInterface.configurePricingRules("EDIT");
+            }
+        } else {
+            pricingRulesInterface.configurePricingRules("CREATE");
         }
 
-        exit();
+        pricingRulesInterface.displayPricingRules();
+        checkoutInterface.configure(pricingRules);
+        checkoutInterface.navigateToCheckoutMenu();
+
+        navigateToMenu();
     }
 
     private void exit() {
@@ -59,6 +75,6 @@ public class MenuInterface {
 
     private void printMenuPrompt() {
         printSectionSeparator();
-        System.out.println("Menu (Press Enter to confirm your selection)");
+        System.out.println("Main Menu (Press Enter to confirm your selection)");
     }
 }
