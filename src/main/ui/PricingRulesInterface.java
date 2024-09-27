@@ -3,11 +3,12 @@ package ui;
 import dto.Item;
 import dto.PricingRules;
 import dto.SpecialPrice;
-import util.GeneralUtils;
+import util.TypeUtils;
 
 import java.util.Scanner;
 
-import static util.GeneralUtils.*;
+import static util.TypeUtils.*;
+import static util.InterfaceUtils.*;
 
 public class PricingRulesInterface {
     private final Scanner scanner;
@@ -30,45 +31,16 @@ public class PricingRulesInterface {
         configureSpecialPricingRules();
     }
 
-    public void displayPricingRules() {
-        printTableRow("Item", "Unit Price in pence", "Special Price in pence");
-        for (Item item : pricingRules.getItems()) {
-            printTableRow(item.getIdentifier(), GeneralUtils.getPenceDisplayPrice(item.getUnitPricePence()), GeneralUtils.getSpecialPriceString(item.getSpecialPrice()));
-        }
-    }
-
     private void createPricingRules() {
         while (!pricingRules.unitPricesConfigured()) {
             printSectionSeparator();
             System.out.println("Unit Price has not been configured for all items.");
             System.out.println("Please input the item to set pricing rules for (Press Enter to confirm your selection)");
-            displayPricingRules();
+            displayPricingRules(pricingRules);
 
             String selectedItem = scanner.nextLine();
             if (selectedItem != null && !selectedItem.isEmpty() && pricingRules.isValidItem(selectedItem.trim())) {
-                Item currentItem = pricingRules.getItems()
-                        .stream()
-                        .filter(item -> item.getIdentifier().equalsIgnoreCase(selectedItem.trim()))
-                        .findFirst()
-                        .get();
-
-                boolean inputIsInvalid = true;
-                while (inputIsInvalid) {
-                    printSectionSeparator();
-                    System.out.printf("Selected Item: %s%n", currentItem.getIdentifier());
-                    System.out.printf("Current Price: %s%n", GeneralUtils.getPenceDisplayPrice(currentItem.getUnitPricePence()));
-                    System.out.println("Please input the unit price in pence");
-                    String unitPriceInput = scanner.nextLine();
-
-                    if (GeneralUtils.isValidIntInput(unitPriceInput)) {
-                        inputIsInvalid = false;
-                        currentItem.setUnitPricePence(Integer.parseInt(unitPriceInput.trim()));
-                        System.out.printf("%nUpdated Price for %s: %s%n", currentItem.getIdentifier(), GeneralUtils.getPenceDisplayPrice(currentItem.getUnitPricePence()));
-
-                    } else {
-                        printInvalidInputMessage(INTEGERS_ONLY_MESSAGE);
-                    }
-                }
+                setUnitPrice(selectedItem);
             } else {
                 printInvalidInputMessage("Please select a valid item");
                 createPricingRules();
@@ -82,35 +54,14 @@ public class PricingRulesInterface {
         while (!finishedEditingRules) {
             printSectionSeparator();
             System.out.println("Please input the item to set pricing rules for or type 'DONE' to finish editing pricing rules (Press Enter to confirm your selection)");
-            displayPricingRules();
-            String input = scanner.nextLine();
-            if (input != null && !input.isEmpty() && (pricingRules.isValidItem(input) || input.trim().equalsIgnoreCase("DONE"))) {
-                if (input.trim().equalsIgnoreCase("DONE")) {
+            displayPricingRules(pricingRules);
+
+            String selectedItem = scanner.nextLine();
+            if (selectedItem != null && !selectedItem.isEmpty() && (pricingRules.isValidItem(selectedItem) || selectedItem.trim().equalsIgnoreCase("DONE"))) {
+                if (selectedItem.trim().equalsIgnoreCase("DONE")) {
                     finishedEditingRules = true;
                 } else {
-                    Item currentItem = pricingRules.getItems()
-                            .stream()
-                            .filter(item -> item.getIdentifier().equalsIgnoreCase(input.trim()))
-                            .findFirst()
-                            .get();
-
-                    boolean inputIsInvalid = true;
-                    while (inputIsInvalid) {
-                        printSectionSeparator();
-                        System.out.printf("Selected Item: %s%n", currentItem.getIdentifier());
-                        System.out.printf("Current Price: %s%n", GeneralUtils.getPenceDisplayPrice(currentItem.getUnitPricePence()));
-                        System.out.println("Please input the unit price in pence");
-                        String unitPriceInput = scanner.nextLine();
-
-                        if (GeneralUtils.isValidIntInput(unitPriceInput)) {
-                            inputIsInvalid = false;
-                            currentItem.setUnitPricePence(Integer.parseInt(unitPriceInput.trim()));
-                            System.out.printf("%nUpdated Price for %s: %s%n", currentItem.getIdentifier(), GeneralUtils.getPenceDisplayPrice(currentItem.getUnitPricePence()));
-
-                        } else {
-                            printInvalidInputMessage(INTEGERS_ONLY_MESSAGE);
-                        }
-                    }
+                    setUnitPrice(selectedItem);
                 }
             }
         }
@@ -127,42 +78,17 @@ public class PricingRulesInterface {
         if (menuSelection != null && VALID_MENU_INPUTS.contains(menuSelection.trim())) {
             if ("1".equals(menuSelection.trim())) {
                 boolean finishedEditingRules = false;
-                SpecialPrice specialPrice;
 
                 while (!finishedEditingRules) {
                     printSectionSeparator();
                     System.out.println("Please input the item to set special pricing rules for or type 'DONE' to finish setting special pricing rules (Press Enter to confirm your selection)");
-                    displayPricingRules();
-                    String input = scanner.nextLine();
-                    if (input != null && !input.isEmpty() && (pricingRules.isValidItem(input) || input.trim().equalsIgnoreCase("DONE"))) {
-                        if (input.trim().equalsIgnoreCase("DONE")) {
+                    displayPricingRules(pricingRules);
+                    String selectedItem = scanner.nextLine();
+                    if (selectedItem != null && !selectedItem.isEmpty() && (pricingRules.isValidItem(selectedItem) || selectedItem.trim().equalsIgnoreCase("DONE"))) {
+                        if (selectedItem.trim().equalsIgnoreCase("DONE")) {
                             finishedEditingRules = true;
                         } else {
-                            Item currentItem = pricingRules.getItems()
-                                    .stream()
-                                    .filter(item -> item.getIdentifier().equalsIgnoreCase(input.trim()))
-                                    .findFirst()
-                                    .get();
-
-                            boolean inputIsInvalid = true;
-                            while (inputIsInvalid) {
-                                printSectionSeparator();
-                                System.out.printf("Selected Item: %s%n", currentItem.getIdentifier());
-                                System.out.printf("Current Special Price: %s%n", GeneralUtils.getSpecialPriceString(currentItem.getSpecialPrice()));
-                                System.out.println("Please input the number of units required for the offer");
-                                String numberOfUnitsRequired = scanner.nextLine();
-                                System.out.println("Please input the special price for the offer");
-                                String specialPricePence = scanner.nextLine();
-
-                                if (GeneralUtils.isValidIntInput(numberOfUnitsRequired) && GeneralUtils.isValidIntInput(specialPricePence)) {
-                                    inputIsInvalid = false;
-                                    specialPrice = new SpecialPrice(Integer.parseInt(numberOfUnitsRequired.trim()), Integer.parseInt(specialPricePence.trim()));
-                                    currentItem.setSpecialPrice(specialPrice);
-                                    System.out.printf("%nUpdated Special Price for %s: %s%n", currentItem.getIdentifier(), GeneralUtils.getSpecialPriceString(currentItem.getSpecialPrice()));
-                                } else {
-                                    printInvalidInputMessage(INTEGERS_ONLY_MESSAGE);
-                                }
-                            }
+                            setSpecialPrice(selectedItem);
                         }
                     }
                 }
@@ -173,7 +99,58 @@ public class PricingRulesInterface {
         }
     }
 
-    private void printTableRow(String stringOne, String stringTwo, String stringThree) {
-        System.out.format("%-15s%-29s%-20s%n", stringOne, stringTwo, stringThree);
+    private void setUnitPrice(String selectedItem) {
+        Item currentItem = getItem(selectedItem);
+
+        boolean inputIsInvalid = true;
+        while (inputIsInvalid) {
+            printSectionSeparator();
+            System.out.printf("Selected Item: %s%n", currentItem.getIdentifier());
+            System.out.printf("Current Price: %s%n", TypeUtils.getPenceDisplayPrice(currentItem.getUnitPricePence()));
+            System.out.println("Please input the unit price in pence");
+            String unitPriceInput = scanner.nextLine();
+
+            if (TypeUtils.isValidIntInput(unitPriceInput)) {
+                inputIsInvalid = false;
+                currentItem.setUnitPricePence(Integer.parseInt(unitPriceInput.trim()));
+                System.out.printf("%nUpdated Price for %s: %s%n", currentItem.getIdentifier(), TypeUtils.getPenceDisplayPrice(currentItem.getUnitPricePence()));
+
+            } else {
+                printInvalidInputMessage(INTEGERS_ONLY_MESSAGE);
+            }
+        }
+    }
+
+    private void setSpecialPrice(String selectedItem) {
+        SpecialPrice specialPrice;
+        Item currentItem = getItem(selectedItem);
+
+        boolean inputIsInvalid = true;
+        while (inputIsInvalid) {
+            printSectionSeparator();
+            System.out.printf("Selected Item: %s%n", currentItem.getIdentifier());
+            System.out.printf("Current Special Price: %s%n", TypeUtils.getSpecialPriceString(currentItem.getSpecialPrice()));
+            System.out.println("Please input the number of requiredUnits required for the offer");
+            String numberOfUnitsRequired = scanner.nextLine();
+            System.out.println("Please input the special price for the offer");
+            String specialPricePence = scanner.nextLine();
+
+            if (TypeUtils.isValidIntInput(numberOfUnitsRequired) && TypeUtils.isValidIntInput(specialPricePence)) {
+                inputIsInvalid = false;
+                specialPrice = new SpecialPrice(Integer.parseInt(numberOfUnitsRequired.trim()), Integer.parseInt(specialPricePence.trim()));
+                currentItem.setSpecialPrice(specialPrice);
+                System.out.printf("%nUpdated Special Price for %s: %s%n", currentItem.getIdentifier(), TypeUtils.getSpecialPriceString(currentItem.getSpecialPrice()));
+            } else {
+                printInvalidInputMessage(INTEGERS_ONLY_MESSAGE);
+            }
+        }
+    }
+
+    private Item getItem(String selectedItem) {
+        return pricingRules.getItems()
+                .stream()
+                .filter(item -> item.getIdentifier().equalsIgnoreCase(selectedItem.trim()))
+                .findFirst()
+                .get();
     }
 }

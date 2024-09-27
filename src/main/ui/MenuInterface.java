@@ -4,7 +4,8 @@ import dto.PricingRules;
 
 import java.util.Scanner;
 
-import static util.GeneralUtils.*;
+import static util.TypeUtils.*;
+import static util.InterfaceUtils.*;
 
 public class MenuInterface {
     private final Scanner scanner;
@@ -26,7 +27,7 @@ public class MenuInterface {
         System.out.println();
         String menuSelection = scanner.nextLine();
 
-        if (menuSelection == null || !VALID_MENU_INPUTS.contains(menuSelection.trim())) {
+        if (isValidMenuSelection(menuSelection)) {
             printInvalidInputMessage("Please select an option from the menu");
             navigateToMenu();
         }
@@ -47,7 +48,7 @@ public class MenuInterface {
             System.out.println();
             String menuSelection = scanner.nextLine();
 
-            if (menuSelection == null || !VALID_MENU_INPUTS.contains(menuSelection.trim())) {
+            if (isValidMenuSelection(menuSelection)) {
                 printInvalidInputMessage("Please select an option from the menu");
                 newCheckoutTransaction();
             }
@@ -59,7 +60,7 @@ public class MenuInterface {
             pricingRulesInterface.configurePricingRules("CREATE");
         }
 
-        pricingRulesInterface.displayPricingRules();
+        displayPricingRules(pricingRules);
         checkoutInterface.configure(pricingRules);
         checkoutInterface.navigateToCheckoutMenu();
 

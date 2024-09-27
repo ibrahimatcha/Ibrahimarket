@@ -33,11 +33,11 @@ public class Basket {
         SpecialPrice specialPrice = selectedItem.getSpecialPrice();
 
         if (specialPrice != null) {
-            int itemsNotUnderOffer = itemCount % specialPrice.getUnits();
-            int itemsUnderOffer = itemCount - itemsNotUnderOffer;
+            int itemsNotUnderOffer = itemCount % specialPrice.requiredUnits();
+            int itemsUnderOffer = (itemCount - itemsNotUnderOffer) / specialPrice.requiredUnits();
 
             int itemsNotUnderOfferTotal = selectedItem.getUnitPricePence() * itemsNotUnderOffer;
-            int itemsUnderOfferTotal = specialPrice.getPricePence() * itemsUnderOffer;
+            int itemsUnderOfferTotal = specialPrice.pricePence() * itemsUnderOffer;
 
             return itemsNotUnderOfferTotal + itemsUnderOfferTotal;
         }

@@ -1,7 +1,7 @@
 package dto;
 
 public class Item {
-    private String identifier;
+    private final String identifier;
     private int unitPricePence;
     private SpecialPrice specialPrice;
 
@@ -11,10 +11,6 @@ public class Item {
 
     public String getIdentifier() {
         return identifier;
-    }
-
-    public void setIdentifier(String identifier) {
-        this.identifier = identifier;
     }
 
     public int getUnitPricePence() {

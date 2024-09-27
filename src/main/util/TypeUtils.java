@@ -6,9 +6,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 
-public class GeneralUtils {
+public class TypeUtils {
     public static final List<String> VALID_MENU_INPUTS = List.of("1", "2");
-    private static final String SECTION_SEPARATOR = "-".repeat(50).concat("\n");
 
     public static String getPenceDisplayPrice(int pricePence) {
         String displayString;
@@ -49,13 +48,7 @@ public class GeneralUtils {
         }
     }
 
-    public static void printSectionSeparator() {
-        System.out.println(SECTION_SEPARATOR);
+    public static boolean isValidMenuSelection(String menuSelection) {
+        return menuSelection == null || !VALID_MENU_INPUTS.contains(menuSelection.trim());
     }
-
-    public static void printInvalidInputMessage(String message) {
-        System.out.printf("Erroneous Input Detected: %s%n", message);
-        System.out.println("Try again");
-    }
-
 }

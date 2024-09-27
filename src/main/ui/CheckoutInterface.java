@@ -1,15 +1,16 @@
 package ui;
 
 import dto.Basket;
-import dto.Item;
 import dto.PricingRules;
-import util.GeneralUtils;
+import util.TypeUtils;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.stream.Stream;
 
-import static util.GeneralUtils.*;
+import static util.TypeUtils.*;
+import static util.InterfaceUtils.*;
 
 public class CheckoutInterface {
     private Basket basket;
@@ -32,7 +33,7 @@ public class CheckoutInterface {
             System.out.println();
             String menuSelection = scanner.nextLine();
 
-            if (menuSelection != null && VALID_MENU_INPUTS.contains(menuSelection.trim())) {
+            if (!isValidMenuSelection(menuSelection)) {
                 switch (menuSelection.trim()) {
                     case "1" -> addItemToBasket();
                     case "2" -> checkoutComplete = true;
@@ -45,8 +46,9 @@ public class CheckoutInterface {
 
     private void addItemToBasket() {
         printSectionSeparator();
-        System.out.println("Please input the item to set pricing rules for (Press Enter to confirm your selection)");
-        displayPricingRules();
+        System.out.println();
+        System.out.println("Please input the item to add to the basket (Press Enter to confirm your selection)");
+        displayPricingRules(basket.getPricingRules());
 
         String selectedItem = scanner.nextLine();
         if (selectedItem != null && !selectedItem.isEmpty() && basket.getPricingRules().isValidItem(selectedItem.trim())) {
@@ -59,10 +61,10 @@ public class CheckoutInterface {
 
             basketProducts.forEach(product -> {
                 int productTotalPricePence = basket.getProductTotal(product.getKey());
-                printTableRow(product.getKey(), product.getValue().toString(), GeneralUtils.getPenceDisplayPrice(productTotalPricePence));
+                printTableRow(product.getKey(), product.getValue().toString(), TypeUtils.getPenceDisplayPrice(productTotalPricePence));
 
             });
-            printTableRow("Total", "", GeneralUtils.getPenceDisplayPrice(basket.getGrandTotal()));
+            printTableRow("Total", "", TypeUtils.getPenceDisplayPrice(basket.getGrandTotal()));
         } else {
             printInvalidInputMessage("Please select a valid item");
             addItemToBasket();
@@ -72,30 +74,25 @@ public class CheckoutInterface {
     private void completeTransaction() {
         printSectionSeparator();
         System.out.println("Final Basket");
-        printTableRow("Item", "Quantity", "Price (£)");
-        Stream<Map.Entry<String, Integer>> basketProducts = basket.getProducts()
+        List<Map.Entry<String, Integer>> basketProducts = basket.getProducts()
                 .entrySet()
                 .stream()
-                .filter(product -> product.getValue() > 0);
+                .filter(product -> product.getValue() > 0)
+                .toList();
 
-        basketProducts.forEach(product -> {
-            int productTotalPricePence = basket.getProductTotal(product.getKey());
-            printTableRow(product.getKey(), product.getValue().toString(), GeneralUtils.getPenceDisplayPrice(productTotalPricePence));
+        if (!basketProducts.isEmpty()) {
+            printTableRow("Item", "Quantity", "Price (£)");
+            basketProducts.forEach(product -> {
+                int productTotalPricePence = basket.getProductTotal(product.getKey());
+                printTableRow(product.getKey(), product.getValue().toString(), TypeUtils.getPenceDisplayPrice(productTotalPricePence));
 
-        });
-        printTableRow("Total", "", GeneralUtils.getPenceDisplayPrice(basket.getGrandTotal()));
-        System.out.println();
-        System.out.println("Transaction complete");
-    }
-
-    private void printTableRow(String stringOne, String stringTwo, String stringThree) {
-        System.out.format("%-15s%-29s%-20s%n", stringOne, stringTwo, stringThree);
-    }
-
-    public void displayPricingRules() {
-        printTableRow("Item", "Unit Price in pence", "Special Price in pence");
-        for (Item item : basket.getPricingRules().getItems()) {
-            printTableRow(item.getIdentifier(), GeneralUtils.getPenceDisplayPrice(item.getUnitPricePence()), GeneralUtils.getSpecialPriceString(item.getSpecialPrice()));
+            });
+            printTableRow("Total", "", TypeUtils.getPenceDisplayPrice(basket.getGrandTotal()));
+            System.out.println();
+        } else {
+            System.out.println("Basket is empty.");
         }
+
+        System.out.println("Transaction complete");
     }
 }
